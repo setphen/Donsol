@@ -87,6 +87,8 @@ def consume(card):
             history.append(TERM.green("Drank " + str(card.value) + " potion"))
         else:
             history.append(TERM.red("Potion made you sick - No effect!"))
+    else:
+        PLAYER.can_drink_potion = True
 
     if card.suit == 'shield':
         PLAYER.shield = card
@@ -154,7 +156,6 @@ def main():
 
                 room = list( {'card': x[0], 'slot': x[1]} for x in zip(draw,CARD_SLOTS))
 
-                PLAYER.can_drink_potion = True
 
             if PLAYER.health == 0:
                 history.append(TERM.black_on_red("YOU DIED"))
