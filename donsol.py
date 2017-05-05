@@ -48,8 +48,35 @@ SUIT_COLORS = {
     'shield': TERM.black_on_blue,
 }
 
+SUIT_ART = {
+    'monster': 
+    [
+    "   ∭∭  ",
+    " ◢ ⁕ ) ",
+    "  ╖▓▓╖ ",
+    " m▟ m▟ ",
+    ]
+    ,
+    'potion':
+    [
+    "  ╮◎╭  ",
+    "  ┋⇡┋  ",
+    " ╭╛ ╘╮ ",
+    " ╰━━━╯ ",
+    ]
+    ,
+    'shield':
+    [
+    "  ▞▲▚  ",
+    " ╱┏ ┓╲ ",
+    " ╲┗ ┛╱ ",
+    "  ▚▼▞  ",
+    ]
+    ,
+}
+
 #card positions:
-margin = 4
+margin = 6
 w = 16
 
 CARD_SLOTS = [ 
@@ -175,9 +202,13 @@ def main():
                     pos = cardTurn['slot']['position']
                     card = cardTurn['card']
                     info = card.suit + " " + str(card.value)
+                    color = SUIT_COLORS[card.suit]
+                    for (y, line) in enumerate(SUIT_ART[card.suit]):
+                        print(TERM.move(1+y,pos[0]) + color(line))
+
                     print(
                         TERM.move(pos[1], pos[0]) + 
-                        SUIT_COLORS[card.suit] (cardTurn['slot']['key'] + "> " + info))
+                        TERM.black_on_white (cardTurn['slot']['key'] + ">") + " "+ color (info))
 
             with TERM.location(margin,margin+2):
                 if can_escape:
@@ -187,16 +218,24 @@ def main():
 
             #Print my stats!
             with TERM.location(y=margin*2):
-                print(TERM.move_x(margin) + "HEALTH: " + str(PLAYER.health))
+                healthbar = '#' * PLAYER.health
+                print(
+                    TERM.move_x(margin) + "HEALTH: " + str(PLAYER.health)
+                    + TERM.move_x(margin+12) + TERM.green(healthbar)
+                )
                 if PLAYER.shield:
                     if PLAYER.last_monster_value:
                         print(TERM.move_x(margin) +
                             "SHIELD: " 
                             + str(PLAYER.shield.value) + " " 
-                            + TERM.red(str(PLAYER.last_monster_value))
-                            )
+                            + TERM.move_x(margin+12) + TERM.blue('#' * PLAYER.shield.value)
+ + TERM.red(" ≠" + str(PLAYER.last_monster_value)))
+                            
                     else:
-                        print(TERM.move_x(margin) + "SHIELD: " + str(PLAYER.shield.value))
+                        print(
+                            TERM.move_x(margin) + "SHIELD: " + 
+                            str(PLAYER.shield.value) + 
+                            TERM.move_x(margin+12) + TERM.blue('#' * PLAYER.shield.value))
 
             #Print my messages!
             with TERM.location(y=margin*3):
