@@ -65,7 +65,7 @@ def consume(card):
     #Take damage from monster
     if card.suit == 'monster':
         if PLAYER.shield:
-            if PLAYER.last_monster_value == None or PLAYER.last_monster_value >= card.value: 
+            if PLAYER.last_monster_value == None or PLAYER.last_monster_value > card.value: 
                 damage = max(0,card.value - PLAYER.shield.value)
                 PLAYER.last_monster_value = card.value
             else:
