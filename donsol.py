@@ -1,14 +1,16 @@
 #Donsol game
 import random
 import math
+import time
 from blessed import Terminal
 
 TERM = Terminal()
 
 class Card:
 
-    def __init__(self, suit, value):
+    def __init__(self, suit, value, name = None):
         self.suit = suit
+        self.name = name or suit
         self.value = value
 
 class Player:
@@ -23,17 +25,77 @@ class Player:
 
 #Build Deck
 # x2, clubs and spades
-blackValues = [2,3,4,5,6,7,8,9,10,11,13,15,17]
-# x2, hearts and diamonds
-redValues = [2,3,4,5,6,7,8,9,10,11,11,11,11]
+heartCards = [
+    {'value': 2, 'name' : ''},
+    {'value': 3, 'name' : ''},
+    {'value': 4, 'name' : ''},
+    {'value': 5, 'name' : ''},
+    {'value': 6, 'name' : ''},
+    {'value': 7, 'name' : ''},
+    {'value': 8, 'name' : ''},
+    {'value': 9, 'name' : ''},
+    {'value': 10, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 11, 'name' : ''},
+]
+
+diamondCards = [
+    {'value': 2, 'name' : ''},
+    {'value': 3, 'name' : ''},
+    {'value': 4, 'name' : ''},
+    {'value': 5, 'name' : ''},
+    {'value': 6, 'name' : ''},
+    {'value': 7, 'name' : ''},
+    {'value': 8, 'name' : ''},
+    {'value': 9, 'name' : ''},
+    {'value': 10, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 11, 'name' : ''},
+]
+
+clubCards = [
+    {'value': 2, 'name' : ''},
+    {'value': 3, 'name' : ''},
+    {'value': 4, 'name' : ''},
+    {'value': 5, 'name' : ''},
+    {'value': 6, 'name' : ''},
+    {'value': 7, 'name' : ''},
+    {'value': 8, 'name' : ''},
+    {'value': 9, 'name' : ''},
+    {'value': 10, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 13, 'name' : ''},
+    {'value': 15, 'name' : ''},
+    {'value': 17, 'name' : ''},
+]
+
+spadeCards = [
+    {'value': 2, 'name' : ''},
+    {'value': 3, 'name' : ''},
+    {'value': 4, 'name' : ''},
+    {'value': 5, 'name' : ''},
+    {'value': 6, 'name' : ''},
+    {'value': 7, 'name' : ''},
+    {'value': 8, 'name' : ''},
+    {'value': 9, 'name' : ''},
+    {'value': 10, 'name' : ''},
+    {'value': 11, 'name' : ''},
+    {'value': 13, 'name' : ''},
+    {'value': 15, 'name' : ''},
+    {'value': 17, 'name' : ''},
+]
 
 DECK = []
 
-hearts = [Card('potion', value) for value in redValues]
-diamonds = [Card('shield', value) for value in redValues]
-clubs = [Card('monster', value) for value in blackValues]
-spades = [Card('monster', value) for value in blackValues]
-jokers = [Card('monster', 21), Card('monster', 21)]
+hearts = [Card('potion', cardInfo['value'], name = cardInfo['name']) for cardInfo in heartCards]
+diamonds = [Card('shield', cardInfo['value'], name = cardInfo['name']) for cardInfo in diamondCards]
+clubs = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in clubCards]
+spades = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in spadeCards]
+jokers = [Card('monster', 21, name='Donsol'), Card('monster', 21, name = 'Donsol')]
 
 DECK = [card for suit in [hearts, diamonds, clubs, spades, jokers] for card in suit]
 
@@ -43,13 +105,13 @@ history = []
 
 #other things
 SUIT_COLORS = {
-    'monster': TERM.black_on_red,
-    'potion': TERM.black_on_green,
-    'shield': TERM.black_on_blue,
+    'monster': TERM.bright_red,
+    'potion': TERM.bright_green,
+    'shield': TERM.bright_blue,
 }
 
 SUIT_ART = {
-    'monster': 
+    'monster':
     [
     "   ∭∭  ",
     " ◢ ⁕ ) ",
@@ -79,7 +141,7 @@ SUIT_ART = {
 margin = 6
 w = 16
 
-CARD_SLOTS = [ 
+CARD_SLOTS = [
     {'key':'j', 'position':(margin,margin)},
     {'key':'k', 'position':(margin+w,margin)},
     {'key':'l', 'position':(margin+w*2,margin)},
@@ -92,7 +154,7 @@ def consume(card):
     #Take damage from monster
     if card.suit == 'monster':
         if PLAYER.shield:
-            if PLAYER.last_monster_value == None or PLAYER.last_monster_value > card.value: 
+            if PLAYER.last_monster_value == None or PLAYER.last_monster_value > card.value:
                 damage = max(0,card.value - PLAYER.shield.value)
                 PLAYER.last_monster_value = card.value
             else:
@@ -103,7 +165,8 @@ def consume(card):
         else:
             damage = card.value
 
-        history.append(TERM.red("Battled " + str(card.value) + " monster, took " + str(damage) + " damage"))
+        battled_message = "Battled {0} ({1}), took {2} damage".format(card.name, card.value, damage)
+        history.append(TERM.red(battled_message))
         PLAYER.health = max(0,PLAYER.health - damage)
 
     #Get health from potion
@@ -124,7 +187,7 @@ def consume(card):
 
 def main():
     global PLAYER, history
-        
+
     print(TERM.enter_fullscreen)
 
     print(TERM.clear)
@@ -137,7 +200,7 @@ def main():
 
     with TERM.cbreak():
         keyval = ''
-        
+
         while keyval.lower() != 'q':
 
             #HANDLE INPUT
@@ -170,11 +233,11 @@ def main():
                     #this gets overwritten by render layer
                     #try creating a messaging system instead
                     history.append(TERM.red("Cannot escape!"))
-            
+
             #Draw new cards, if room is empty
             if len(room) == 0 and PLAYER.health > 0 and len(DECK) > 0:
                 ncards = min(len(DECK),4)
-               
+
                 draw = DECK[:ncards]
 
                 del DECK[:ncards]
@@ -182,7 +245,6 @@ def main():
                 history.append(TERM.blue(str(len(DECK)) + " CARDS REMAIN"))
 
                 room = list( {'card': x[0], 'slot': x[1]} for x in zip(draw,CARD_SLOTS))
-
 
             if PLAYER.health == 0:
                 history.append(TERM.black_on_red("YOU DIED"))
@@ -201,20 +263,20 @@ def main():
                 if cardTurn:
                     pos = cardTurn['slot']['position']
                     card = cardTurn['card']
-                    info = card.suit + " " + str(card.value)
+                    info = card.name.capitalize() + " " + str(card.value)
                     color = SUIT_COLORS[card.suit]
                     for (y, line) in enumerate(SUIT_ART[card.suit]):
                         print(TERM.move(1+y,pos[0]) + color(line))
 
                     print(
-                        TERM.move(pos[1], pos[0]) + 
+                        TERM.move(pos[1], pos[0]) +
                         TERM.black_on_white (cardTurn['slot']['key'] + ">") + " "+ color (info))
 
             with TERM.location(margin,margin+2):
-                if can_escape:
-                    print(TERM.black_on_yellow('f> flee'))
+                if can_escape and PLAYER.health > 0:
+                    print(TERM.yellow(TERM.black_on_yellow('f>') + ' flee'))
                 else:
-                    print(TERM.black('f> flee')) 
+                    print(TERM.black('f> flee'))
 
             #Print my stats!
             with TERM.location(y=margin*2):
@@ -226,15 +288,15 @@ def main():
                 if PLAYER.shield:
                     if PLAYER.last_monster_value:
                         print(TERM.move_x(margin) +
-                            "SHIELD: " 
-                            + str(PLAYER.shield.value) + " " 
+                            "SHIELD: "
+                            + str(PLAYER.shield.value) + " "
                             + TERM.move_x(margin+12) + TERM.blue('#' * PLAYER.shield.value)
  + TERM.red(" ≠" + str(PLAYER.last_monster_value)))
-                            
+
                     else:
                         print(
-                            TERM.move_x(margin) + "SHIELD: " + 
-                            str(PLAYER.shield.value) + 
+                            TERM.move_x(margin) + "SHIELD: " +
+                            str(PLAYER.shield.value) +
                             TERM.move_x(margin+12) + TERM.blue('#' * PLAYER.shield.value))
 
             #Print my messages!
@@ -242,7 +304,10 @@ def main():
                 for message in history[-6:]:
                     print(TERM.move_x(margin) + TERM.yellow(message))
 
-            #GET INPUT        
+            #SLEEP before getting INPUT
+            time.sleep(0.11)
+
+            #GET INPUT
             keyval = TERM.inkey()
             if PLAYER.health == 0:
                 if keyval != 'q':
