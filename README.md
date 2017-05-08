@@ -14,3 +14,5 @@ cd Donsol
 pip install -r requirements.txt
 python donsol.py
 ```
+
+Getting non-ASCII or unicode related errors? Use Python 3.
