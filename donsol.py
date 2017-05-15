@@ -26,67 +26,72 @@ class Player:
 #Build Deck
 # x2, clubs and spades
 heartCards = [
-    {'value': 2, 'name' : ''},
-    {'value': 3, 'name' : ''},
-    {'value': 4, 'name' : ''},
-    {'value': 5, 'name' : ''},
-    {'value': 6, 'name' : ''},
-    {'value': 7, 'name' : ''},
-    {'value': 8, 'name' : ''},
-    {'value': 9, 'name' : ''},
-    {'value': 10, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 11, 'name' : ''},
+    {'value': 2, 'name' : 'Small Potion'},
+    {'value': 3, 'name' : 'Small Potion'},
+    {'value': 4, 'name' : 'Medium Potion'},
+    {'value': 5, 'name' : 'Medium Potion'},
+    {'value': 6, 'name' : 'Medium Potion'},
+    {'value': 7, 'name' : 'Medium Potion'},
+    {'value': 8, 'name' : 'Medium Potion'},
+    {'value': 9, 'name' : 'Large Potion'},
+    {'value': 10, 'name' : 'Large Potion'},
+    {'value': 11, 'name' : 'White Mage'},
+    {'value': 11, 'name' : 'White Mage'},
+    {'value': 11, 'name' : 'White Mage'},
+    {'value': 11, 'name' : 'White Mage'},
 ]
 
 diamondCards = [
-    {'value': 2, 'name' : ''},
-    {'value': 3, 'name' : ''},
-    {'value': 4, 'name' : ''},
-    {'value': 5, 'name' : ''},
-    {'value': 6, 'name' : ''},
-    {'value': 7, 'name' : ''},
-    {'value': 8, 'name' : ''},
-    {'value': 9, 'name' : ''},
-    {'value': 10, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 11, 'name' : ''},
+    {'value': 2, 'name' : 'Buckler'},
+    {'value': 3, 'name' : 'Buckler'},
+    {'value': 4, 'name' : 'Shield'},
+    {'value': 5, 'name' : 'Shield'},
+    {'value': 6, 'name' : 'Shield'},
+    {'value': 7, 'name' : 'Shield'},
+    {'value': 8, 'name' : 'Shield'},
+    {'value': 9, 'name' : 'Large Shield'},
+    {'value': 10, 'name' : 'Large Shield'},
+    {'value': 11, 'name' : 'Red Mage'},
+    {'value': 11, 'name' : 'Red Mage'},
+    {'value': 11, 'name' : 'Red Mage'},
+    {'value': 11, 'name' : 'Red Mage'},
 ]
 
 clubCards = [
-    {'value': 2, 'name' : ''},
-    {'value': 3, 'name' : ''},
-    {'value': 4, 'name' : ''},
-    {'value': 5, 'name' : ''},
-    {'value': 6, 'name' : ''},
-    {'value': 7, 'name' : ''},
-    {'value': 8, 'name' : ''},
-    {'value': 9, 'name' : ''},
-    {'value': 10, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 13, 'name' : ''},
-    {'value': 15, 'name' : ''},
-    {'value': 17, 'name' : ''},
+    {'value': 2, 'name' : 'Rat'},
+    {'value': 3, 'name' : 'Bat'},
+    {'value': 4, 'name' : 'Imp'},
+    {'value': 5, 'name' : 'Goblin'},
+    {'value': 6, 'name' : 'Orc'},
+    {'value': 7, 'name' : 'Ogre'},
+    {'value': 8, 'name' : 'Beholder'},
+    {'value': 9, 'name' : 'Medusa'},
+    {'value': 10, 'name' : 'Demon'},
+    {'value': 11, 'name' : 'Consort'},
+    {'value': 13, 'name' : 'Queen'},
+    {'value': 15, 'name' : 'Reagnant'},
+    {'value': 17, 'name' : 'Empress'},
 ]
 
 spadeCards = [
-    {'value': 2, 'name' : ''},
-    {'value': 3, 'name' : ''},
-    {'value': 4, 'name' : ''},
-    {'value': 5, 'name' : ''},
-    {'value': 6, 'name' : ''},
-    {'value': 7, 'name' : ''},
-    {'value': 8, 'name' : ''},
-    {'value': 9, 'name' : ''},
-    {'value': 10, 'name' : ''},
-    {'value': 11, 'name' : ''},
-    {'value': 13, 'name' : ''},
-    {'value': 15, 'name' : ''},
-    {'value': 17, 'name' : ''},
+    {'value': 2, 'name' : 'Slime'},
+    {'value': 3, 'name' : 'Tunneler'},
+    {'value': 4, 'name' : 'Fiend'},
+    {'value': 5, 'name' : 'Drake'},
+    {'value': 6, 'name' : 'Specter'},
+    {'value': 7, 'name' : 'Ghost'},
+    {'value': 8, 'name' : 'Elemental'},
+    {'value': 9, 'name' : 'Witch'},
+    {'value': 10, 'name' : 'Familiar'},
+    {'value': 11, 'name' : 'Consort'},
+    {'value': 13, 'name' : 'Queen'},
+    {'value': 15, 'name' : 'Reagnant'},
+    {'value': 17, 'name' : 'Empress'},
+]
+
+jokerCards = [
+    {'value': 21, 'name' : 'First Donsol'},
+    {'value': 21, 'name' : 'Second Donsol'},
 ]
 
 DECK = []
@@ -95,7 +100,7 @@ hearts = [Card('potion', cardInfo['value'], name = cardInfo['name']) for cardInf
 diamonds = [Card('shield', cardInfo['value'], name = cardInfo['name']) for cardInfo in diamondCards]
 clubs = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in clubCards]
 spades = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in spadeCards]
-jokers = [Card('monster', 21, name='Donsol'), Card('monster', 21, name = 'Donsol')]
+jokers = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in jokerCards]
 
 DECK = [card for suit in [hearts, diamonds, clubs, spades, jokers] for card in suit]
 
@@ -139,7 +144,7 @@ SUIT_ART = {
 
 #card positions:
 margin = 6
-w = 16
+w = 19
 
 CARD_SLOTS = [
     {'key':'j', 'position':(margin,margin)},
@@ -263,7 +268,7 @@ def main():
                 if cardTurn:
                     pos = cardTurn['slot']['position']
                     card = cardTurn['card']
-                    info = card.name.capitalize() + " " + str(card.value)
+                    info = card.name + " " + str(card.value)
                     color = SUIT_COLORS[card.suit]
                     for (y, line) in enumerate(SUIT_ART[card.suit]):
                         print(TERM.move(1+y,pos[0]) + color(line))
