@@ -1,6 +1,4 @@
 # Donsol game
-import random
-import math
 
 
 class Card:
