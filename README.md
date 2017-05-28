@@ -15,4 +15,9 @@ pip install -r requirements.txt
 python donsol.py
 ```
 
+development
+===
+run tests with `pytest`
+run coverage with `coverage run --source game -m pytest` then `coverage report`
+
 Getting non-ASCII or unicode related errors? Use Python 3.
