@@ -20,7 +20,14 @@ class Player:
         self.shield = None
         self.can_drink_potion = True
         self.escaped_last_room = False
-        self.last_monster_value = None
+
+    def handle_monster(self, monster_value):
+        damage = monster_value
+        if self.shield:
+            broken, damage = self.shield.handle_monster(monster_value)
+            if broken:
+                self.shield = None
+        self.health = max(0, self.health - damage)
 
 
 class Shield:
