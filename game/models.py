@@ -33,11 +33,13 @@ class Shield:
 
     def handle_monster(self, monster_value):
         """Return tuple of broken boolean and damage taken"""
+        broken = False
         if self.previous_value is not None and monster_value >= self.previous_value:
-            # logging.getLogger('history', 'Shield Broke!')
+            # logging.getLogger('history', 'Shield Broke!')A
+            broken = True
             self.value = 0
         self.previous_value = monster_value
-        return max(0, monster_value - self.value)
+        return (broken, max(0, monster_value - self.value))
 
 
 class Room:
