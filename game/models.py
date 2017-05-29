@@ -1,5 +1,5 @@
 # Donsol game
-
+import random
 
 class Card:
 
@@ -79,6 +79,23 @@ class Room:
             if monsters_remain:
                 return False
         return True
+
+
+class Deck:
+    """A deck holds an ordered set of cards and can pop or shuffle them"""
+
+    def __init__(self, cards):
+        self.cards = cards
+
+    def draw(self):
+        return self.cards.pop()
+
+    def shuffle(self):
+        random.shuffle(self.cards)
+
+    def add(self, cards):
+        """Add the passed list of cards to the deck"""
+        self.cards.extend(cards)
 
 
 # Build Deck
