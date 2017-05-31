@@ -87,8 +87,18 @@ class Deck:
     def __init__(self, cards):
         self.cards = cards
 
-    def draw(self):
-        return self.cards.pop()
+    def draw(self, count):
+        """
+        Draw <count> cards from the deck, or as many as are available.
+        return a list of cards drawn.
+        """
+        drawn = []
+        while len(drawn) < count:
+            try:
+                drawn.append(self.cards.pop())
+            except IndexError:
+                break
+        return drawn
 
     def shuffle(self):
         random.shuffle(self.cards)
