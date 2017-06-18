@@ -1,5 +1,6 @@
 # Donsol game
 import random
+from time import time
 
 class Card:
 
@@ -84,8 +85,15 @@ class Room:
 class Deck:
     """A deck holds an ordered set of cards and can pop or shuffle them"""
 
-    def __init__(self, cards):
+    def __init__(self, cards, seed=None):
+        """Optionally accept a seed to make the deck deterministic"""
         self.cards = cards
+        self.random = random.Random()
+        if seed is None:
+            seed = time()
+
+        self.random.seed(seed)
+        print("Deck's random seed is: {}".format(seed))
 
     def draw(self, count):
         """
@@ -101,7 +109,7 @@ class Deck:
         return drawn
 
     def shuffle(self):
-        random.shuffle(self.cards)
+        self.random.shuffle(self.cards)
 
     def add(self, cards):
         """Add the passed list of cards to the deck"""

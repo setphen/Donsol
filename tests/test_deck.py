@@ -1,5 +1,13 @@
 from game.models import Deck
 
+def test_deck_with_seed_is_repeatable():
+    d = Deck(list(range(52)), seed=847576)
+    d.shuffle()
+    assert d.draw(10) == [11, 24, 46, 37, 25, 47, 18, 14, 8, 39]
+    d2 = Deck(list(range(52)), seed=234987)
+    d2.shuffle()
+    assert d2.draw(10) == [14, 17, 23, 9, 10, 24, 36, 20, 49, 7]
+
 
 def test_deck_draw_removes_items():
     d = Deck(list(range(16)))
