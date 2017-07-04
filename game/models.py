@@ -2,6 +2,25 @@
 import random
 from time import time
 
+
+HEART = 1
+DIAMOND = 2
+SPADE = 3
+CLUB = 4
+JOKER = 5
+
+SUIT_NAMES = {HEART: "Hearts",
+              SPADE: "Spades",
+              DIAMOND: "Diamonds",
+              CLUB: "Clubs"}
+
+VALUES = {HEART: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
+          DIAMOND: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
+          CLUB: [2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 15, 17],
+          SPADE: [2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 15, 17],
+          JOKER: [21, 21]}
+
+
 class Card:
 
     def __init__(self, suit, value, name=None):
@@ -10,7 +29,13 @@ class Card:
         self.value = value
 
     def is_monster(self):
-        return self.suit in ['spade', 'club']
+        return self.suit in [SPADE, CLUB]
+
+    def __str__(self):
+        return "{} of {}".format(self.value, SUIT_NAMES[self.suit])
+
+    def __repr__(self):
+        return str(self)
 
 
 class Player:
@@ -116,80 +141,11 @@ class Deck:
         self.cards.extend(cards)
 
 
-# Build Deck
-# x2, clubs and spades
-heartCards = [
-    {'value': 2, 'name': ''},
-    {'value': 3, 'name': ''},
-    {'value': 4, 'name': ''},
-    {'value': 5, 'name': ''},
-    {'value': 6, 'name': ''},
-    {'value': 7, 'name': ''},
-    {'value': 8, 'name': ''},
-    {'value': 9, 'name': ''},
-    {'value': 10, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 11, 'name': ''},
-]
+def make_standard_deck():
+    cards = []
+    for suit in VALUES.keys():
+        for value in VALUES[suit]:
+            cards.append(Card(suit, value))
+    return Deck(cards)
 
-diamondCards = [
-    {'value': 2, 'name': ''},
-    {'value': 3, 'name': ''},
-    {'value': 4, 'name': ''},
-    {'value': 5, 'name': ''},
-    {'value': 6, 'name': ''},
-    {'value': 7, 'name': ''},
-    {'value': 8, 'name': ''},
-    {'value': 9, 'name': ''},
-    {'value': 10, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 11, 'name': ''},
-]
 
-clubCards = [
-    {'value': 2, 'name': ''},
-    {'value': 3, 'name': ''},
-    {'value': 4, 'name': ''},
-    {'value': 5, 'name': ''},
-    {'value': 6, 'name': ''},
-    {'value': 7, 'name': ''},
-    {'value': 8, 'name': ''},
-    {'value': 9, 'name': ''},
-    {'value': 10, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 13, 'name': ''},
-    {'value': 15, 'name': ''},
-    {'value': 17, 'name': ''},
-]
-
-spadeCards = [
-    {'value': 2, 'name': ''},
-    {'value': 3, 'name': ''},
-    {'value': 4, 'name': ''},
-    {'value': 5, 'name': ''},
-    {'value': 6, 'name': ''},
-    {'value': 7, 'name': ''},
-    {'value': 8, 'name': ''},
-    {'value': 9, 'name': ''},
-    {'value': 10, 'name': ''},
-    {'value': 11, 'name': ''},
-    {'value': 13, 'name': ''},
-    {'value': 15, 'name': ''},
-    {'value': 17, 'name': ''},
-]
-
-DECK = []
-
-hearts = [Card('potion', cardInfo['value'], name = cardInfo['name']) for cardInfo in heartCards]
-diamonds = [Card('shield', cardInfo['value'], name = cardInfo['name']) for cardInfo in diamondCards]
-clubs = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in clubCards]
-spades = [Card('monster', cardInfo['value'], name = cardInfo['name']) for cardInfo in spadeCards]
-jokers = [Card('monster', 21, name='Donsol'), Card('monster', 21, name = 'Donsol')]
-
-DECK = [card for suit in [hearts, diamonds, clubs, spades, jokers] for card in suit]
-
-PLAYER = Player()

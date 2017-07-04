@@ -1,14 +1,19 @@
 import pytest
-from game.models import Room, Card
+from game.models import (Room,
+                         Card,
+                         HEART,
+                         DIAMOND,
+                         CLUB,
+                         SPADE)
 
 
 @pytest.fixture
 def cards():
     return [
-        Card('heart', 5, 'Elixir'),
-        Card('spade', 2),
-        Card('club', 9, ''),
-        Card('diamond', 6, 'Stalwart'),
+        Card(HEART, 5, 'Elixir'),
+        Card(SPADE, 2),
+        Card(CLUB, 9, ''),
+        Card(DIAMOND, 6, 'Stalwart'),
     ]
 
 
@@ -25,7 +30,7 @@ def test_room_previous_escaped(cards):
 def test_room_select_card(cards):
     r = Room(cards, player_escaped_previous_room=True)
     card = r.select_card('k')
-    assert card.suit == 'spade'
+    assert card.suit == SPADE
     assert card.value == 2
 
 

@@ -1,4 +1,8 @@
-from game.models import Card
+from game.models import (Card,
+                         HEART,
+                         SPADE,
+                         CLUB,
+                         DIAMOND)
 
 def test_card_creation_without_name():
     c = Card('heart', 5)
@@ -15,11 +19,20 @@ def test_card_creation_with_name():
 
 
 def test_card_spade_is_monster():
-    c = Card('spade', 5)
+    c = Card(SPADE, 5)
     assert c.is_monster() == True
 
 
 def test_card_club_is_monster():
-    c = Card('club', 5)
+    c = Card(CLUB, 5)
     assert c.is_monster() == True
 
+
+def test_card_heart_is_not_monster():
+    c = Card(HEART, 5)
+    assert c.is_monster() == False
+
+
+def test_card_diamond_is_not_monster():
+    c = Card(DIAMOND, 5)
+    assert c.is_monster() == False
