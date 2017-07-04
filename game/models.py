@@ -54,6 +54,18 @@ class Player:
             if broken:
                 self.shield = None
         self.health = max(0, self.health - damage)
+        self.can_drink_potion = True
+
+    def equip_shield(self, shield):
+        self.shield = shield
+        self.can_drink_potion = True
+
+    def drink_potion(self, potion_value):
+        if self.can_drink_potion:
+            self.health = min(self.max_health, self.health+potion_value)
+            self.can_drink_potion = False
+        else:
+            pass
 
 
 class Shield:
@@ -65,8 +77,9 @@ class Shield:
     def handle_monster(self, monster_value):
         """Return tuple of broken boolean and damage taken"""
         broken = False
-        if self.previous_value is not None and monster_value >= self.previous_value:
-            # logging.getLogger('history', 'Shield Broke!')A
+        if (self.previous_value is not None and
+                monster_value >= self.previous_value):
+            # logging.getLogger('history', 'Shield Broke!')
             broken = True
             self.value = 0
         self.previous_value = monster_value
