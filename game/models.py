@@ -111,6 +111,11 @@ class Room:
         except KeyError:
             return None
 
+    def completed(self):
+        if self.slots:
+            return False
+        return True
+
     def escapable(self):
         """Check whether or not the room is escapable"""
         if self.player_escaped_previous_room:

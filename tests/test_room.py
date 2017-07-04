@@ -42,3 +42,18 @@ def test_room_flee_failure(cards):
 def test_room_flee_success(cards):
     r = Room(cards)
     assert set(r.flee()) == set(cards)
+
+
+def test_room_completed(cards):
+    r = Room(cards)
+    r.select_card('j')
+    r.select_card('k')
+    r.select_card('l')
+    r.select_card(';')
+    assert r.completed() == True
+
+
+def test_room_not_completed(cards):
+    r = Room(cards)
+    r.select_card(';')
+    assert r.completed() == False
