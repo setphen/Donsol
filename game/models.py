@@ -1,5 +1,6 @@
 # Donsol game
 import random
+import sys
 from time import time
 
 
@@ -160,10 +161,53 @@ class Deck:
 
 
 def make_standard_deck():
+    print("running MSD")
     cards = []
     for suit in VALUES.keys():
         for value in VALUES[suit]:
             cards.append(Card(suit, value))
-    return Deck(cards)
+    return cards
 
 
+class Dungeon:
+    """Handle deck, room and player creation and interaction"""
+
+    def __init__(self, cards=make_standard_deck(), seed=None):
+        self.deck = Deck(cards=cards, seed=seed)
+        self.deck.shuffle()
+        self.player = Player()
+        self.room_history = []
+        self.generate_room()
+
+    def generate_room(self):
+        self.room_history.append(
+            Room(self.deck.draw(4),
+                 self.player.escaped_last_room))
+
+    def handle_input(self, input):
+        if input == 'q':
+            sys.exit()
+        elif input in ['j', 'k', 'l', ';']:
+            card = self.room_history[-1].select_card(input)
+            self.handle_card(card)
+            if self.room_history[-1].completed():
+                self.generate_room()
+
+        elif input == 'f' and self.room_history[-1].escapable():
+            cards = self.room_history[-1].flee()
+            self.handle_flee(cards)
+            self.generate_room()
+        else:
+            pass
+
+    def handle_card(self, card):
+        if card.suit == HEART:
+            self.player.drink_potion(card.value)
+        elif card.suit == DIAMOND:
+            self.player.equip_shield(card.value)
+        else:
+            self.Player.handle_monster(card.value)
+
+    def handle_flee(self, cards):
+        self.deck.add(cards)
+        self.deck.shuffle()
