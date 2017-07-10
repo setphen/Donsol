@@ -13,13 +13,14 @@ JOKER = 5
 SUIT_NAMES = {HEART: "Hearts",
               SPADE: "Spades",
               DIAMOND: "Diamonds",
-              CLUB: "Clubs"}
+              CLUB: "Clubs",
+              JOKER: "Joker"}
 
-VALUES = {HEART: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
+VALUES = {HEART:   [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
           DIAMOND: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
-          CLUB: [2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 15, 17],
-          SPADE: [2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 15, 17],
-          JOKER: [21, 21]}
+          CLUB:    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17],
+          SPADE:   [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17],
+          JOKER:   [21, 21]}
 
 
 class Card:
@@ -33,6 +34,8 @@ class Card:
         return self.suit in [SPADE, CLUB]
 
     def __str__(self):
+        if self.suit == JOKER:
+            return "Joker"
         return "{} of {}".format(self.value, SUIT_NAMES[self.suit])
 
     def __repr__(self):
