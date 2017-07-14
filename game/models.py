@@ -175,7 +175,9 @@ def make_standard_deck():
 class Dungeon:
     """Handle deck, room and player creation and interaction"""
 
-    def __init__(self, cards=make_standard_deck(), seed=None):
+    def __init__(self, cards=None, seed=None):
+        if not cards:
+            cards = make_standard_deck()
         self.deck = Deck(cards=cards, seed=seed)
         self.deck.shuffle()
         self.player = Player()

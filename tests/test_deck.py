@@ -1,4 +1,4 @@
-from game.models import Deck
+from game.models import Deck, make_standard_deck
 
 def test_deck_with_seed_is_repeatable():
     d = Deck(list(range(52)), seed=847576)
@@ -29,3 +29,8 @@ def test_deck_add():
     assert len(d.cards) == 5
     d.add(list(range(5)))
     assert len(d.cards) == 10
+
+
+def test_standard_deck():
+    cards = make_standard_deck()
+    assert len(cards) == 54
