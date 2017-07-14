@@ -71,6 +71,9 @@ class Player:
         else:
             pass
 
+    def enter_new_room(self, fled=False):
+        self.escaped_last_room = fled
+
 
 class Shield:
 
@@ -164,7 +167,6 @@ class Deck:
 
 
 def make_standard_deck():
-    print("running MSD")
     cards = []
     for suit in VALUES.keys():
         for value in VALUES[suit]:
@@ -184,10 +186,9 @@ class Dungeon:
         self.room_history = []
         self.generate_room()
 
-    def generate_room(self):
-        self.room_history.append(
-            Room(self.deck.draw(4),
-                 self.player.escaped_last_room))
+    def generate_room(self, fled=False):
+        self.player.enter_new_room(fled=fled)
+        self.room_history.append(Room(self.deck.draw(4), fled))
 
     def handle_input(self, input):
         if input == 'q':
@@ -197,11 +198,10 @@ class Dungeon:
             self.handle_card(card)
             if self.room_history[-1].completed():
                 self.generate_room()
-
         elif input == 'f' and self.room_history[-1].escapable():
             cards = self.room_history[-1].flee()
             self.handle_flee(cards)
-            self.generate_room()
+            self.generate_room(fled=True)
         else:
             pass
 
