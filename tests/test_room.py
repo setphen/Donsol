@@ -25,6 +25,9 @@ def test_room_escapable(cards):
 def test_room_previous_escaped(cards):
     r = Room(cards, player_escaped_previous_room=True)
     assert r.escapable() == False
+    r.select_card('k')
+    r.select_card('l')
+    assert r.escapable() == True
 
 
 def test_room_select_card(cards):

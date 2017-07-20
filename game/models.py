@@ -60,8 +60,8 @@ class Player:
         self.health = max(0, self.health - damage)
         self.can_drink_potion = True
 
-    def equip_shield(self, shield):
-        self.shield = shield
+    def equip_shield(self, value):
+        self.shield = Shield(value)
         self.can_drink_potion = True
 
     def drink_potion(self, potion_value):
@@ -211,7 +211,7 @@ class Dungeon:
         elif card.suit == DIAMOND:
             self.player.equip_shield(card.value)
         else:
-            self.Player.handle_monster(card.value)
+            self.player.handle_monster(card.value)
 
     def handle_flee(self, cards):
         self.deck.add(cards)
