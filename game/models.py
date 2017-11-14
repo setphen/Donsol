@@ -2,6 +2,7 @@
 import random
 import sys
 from time import time
+import logging
 
 
 HEART = 1
@@ -16,12 +17,24 @@ SUIT_NAMES = {HEART: "Hearts",
               CLUB: "Clubs",
               JOKER: "Joker"}
 
+SUIT_TYPES = {HEART: "Potion",
+              SPADE: "Monster",
+              DIAMOND: "Shield",
+              CLUB: "Monster",
+              JOKER: "Donsol"}
+
 VALUES = {HEART:   [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
           DIAMOND: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11],
           CLUB:    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17],
           SPADE:   [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17],
           JOKER:   [21, 21]}
 
+CARD_POSITIONS = {
+    'j': 0,
+    'k': 1,
+    'l': 2,
+    ';': 3
+}
 
 class Card:
 
@@ -86,7 +99,7 @@ class Shield:
         broken = False
         if (self.previous_value is not None and
                 monster_value >= self.previous_value):
-            # logging.getLogger('history', 'Shield Broke!')
+            logging.getLogger('history').info('Shield Broke!')
             broken = True
             self.value = 0
         self.previous_value = monster_value
@@ -143,7 +156,8 @@ class Deck:
             seed = time()
 
         self.random.seed(seed)
-        print("Deck's random seed is: {}".format(seed))
+        logging.getLogger('history').info("Deck's random seed is: {}".format(seed))
+        #print("Deck's random seed is: {}".format(seed))
 
     def draw(self, count):
         """
@@ -184,6 +198,7 @@ class Dungeon:
         self.deck.shuffle()
         self.player = Player()
         self.room_history = []
+        self.event_history = []
         self.generate_room()
 
     def generate_room(self, fled=False):
@@ -193,12 +208,13 @@ class Dungeon:
     def handle_input(self, input):
         if input == 'q':
             sys.exit()
-        elif input in ['j', 'k', 'l', ';']:
+        elif input in ['j', 'k', 'l', ';'] and self.player.health > 0:
             card = self.room_history[-1].select_card(input)
-            self.handle_card(card)
+            if card:
+                self.handle_card(card)
             if self.room_history[-1].completed():
                 self.generate_room()
-        elif input == 'f' and self.room_history[-1].escapable():
+        elif input == 'f' and self.room_history[-1].escapable() and self.player.health > 0:
             cards = self.room_history[-1].flee()
             self.handle_flee(cards)
             self.generate_room(fled=True)
@@ -213,6 +229,71 @@ class Dungeon:
         else:
             self.player.handle_monster(card.value)
 
+        if self.player.health == 0:
+            self.event_history.append('You died!')
+
     def handle_flee(self, cards):
         self.deck.add(cards)
         self.deck.shuffle()
+
+class Renderer:
+    """Render the dungeon and controls"""
+
+    def __init__(self, dungeon, terminal, margin = 6, card_spacing = 16):
+        self.dungeon = dungeon
+        self.term = terminal
+
+        # card positions:
+        self.margin = margin
+        self.spacing = card_spacing
+
+        self.palette = {HEART: self.term.white,
+                        SPADE: self.term.bright_red,
+                        DIAMOND: self.term.white,
+                        CLUB: self.term.bright_red,
+                        JOKER: self.term.bright_blue}
+
+    def render(self):
+        print(self.term.clear)
+
+        #Print the cards
+        slots = self.dungeon.room_history[-1].slots
+        for slot in slots:
+            card = slots[slot]
+            pos = CARD_POSITIONS[slot] * self.spacing
+            color = self.palette[card.suit]
+            #info = str(card.name).capitalize() + " " + str(card)
+            #
+            # for (y, line) in enumerate(SUIT_ART[card.suit]):
+            #     print(self.term.move(1+y,pos[0]) + line)
+
+            print(
+                self.term.move(self.margin, self.margin + pos) +
+                self.term.black_on_white (str(slots[slot])) +
+                self.term.move(self.margin + 1, self.margin + pos) +
+                color(str(SUIT_TYPES[card.suit])) +
+                self.term.move(self.margin + 2, self.margin + pos) +
+                self.term.black_on_white ('== ' + slot + ' ==')
+                )
+
+        #flee command
+        print(
+            self.term.move(self.margin + 6, self.margin) +
+            self.term.black_on_white ('f> flee') )
+
+        #Print stats
+        if self.dungeon.player.shield:
+            if self.dungeon.player.shield.previous_value:
+                print(self.term.move(self.margin + 8, self.margin) +
+                    "Shield: "
+                    + str(self.dungeon.player.shield.value) + " "
+                    + self.term.move_x(self.margin + 12) + '#' * self.dungeon.player.shield.value
+                    + self.term.red(" ≠" + str(self.dungeon.player.shield.previous_value)))
+            else:
+                print(
+                    self.term.move(self.margin + 8, self.margin) + "Shield: " +
+                    str(self.dungeon.player.shield.value) +
+                    self.term.move_x(self.margin + 12) +  '#' * self.dungeon.player.shield.value)
+
+        #Print event history
+        #logging.getLogger('history').info("log this!")
