@@ -4,7 +4,7 @@
 
 A blessed port of John Eternal and Devine Lu Linvega's card game [Donsol](http://wiki.xxiivv.com/donsol). *Confused?* Read the [rules](http://wiki.xxiivv.com/Donsol)
 
-![donsol game](http://i.imgur.com/NgemFMt.png)
+<img src='https://raw.githubusercontent.com/neauoire/Donsol/master/PREVIEW.png' width="600"/>
 
 ## Controls
 
