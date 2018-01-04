@@ -1,7 +1,13 @@
+# encoding=utf8  
 #Donsol game
+import sys  
 import random
 import math
 import time
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 from blessed import Terminal
 
 TERM = Terminal()
