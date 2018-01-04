@@ -36,6 +36,49 @@ CARD_POSITIONS = {
     ';': 3
 }
 
+SUIT_ART = {
+    SPADE:
+    [
+    "   ∭∭  ",
+    " ◢ ⁕ ) ",
+    "  ╖▓▓╖ ",
+    " m▟ m▟ ",
+    ]
+    ,
+    CLUB:
+    [
+    "   ∭∭  ",
+    " ◢ ⁕ ) ",
+    "  ╖▓▓╖ ",
+    " m▟ m▟ ",
+    ]
+    ,
+    JOKER:
+    [
+    "   ╱ ╲  ",
+    "  [ ۞ ] ",
+    "   ╲ ╱  ",
+    "   ҈ ҈ ҈ ҈  ",
+    ]
+    ,
+    HEART:
+    [
+    "  ╮◎╭  ",
+    "  ┋⇡┋  ",
+    " ╭╛ ╘╮ ",
+    " ╰━━━╯ ",
+    ]
+    ,
+    DIAMOND:
+    [
+    "  ▞▲▚  ",
+    " ╱┏ ┓╲ ",
+    " ╲┗ ┛╱ ",
+    "  ▚▼▞  ",
+    ]
+    ,
+}
+
 class Card:
 
     def __init__(self, suit, value, name=None):
@@ -71,17 +114,24 @@ class Player:
             if broken:
                 self.shield = None
         self.health = max(0, self.health - damage)
+        logging.getLogger('history').info('Fought %s monster, took %s damage' % (monster_value,damage))
         self.can_drink_potion = True
 
     def equip_shield(self, value):
         self.shield = Shield(value)
+        logging.getLogger('history').info('Equipped %s shield' % value)
         self.can_drink_potion = True
 
     def drink_potion(self, potion_value):
         if self.can_drink_potion:
+            previous_health = self.health
             self.health = min(self.max_health, self.health+potion_value)
+            #Log it
+            msg = 'Drank potion, plus %s health' % (self.health - previous_health)
+            logging.getLogger('history').info(msg)
             self.can_drink_potion = False
         else:
+            logging.getLogger('history').info('Potion had no effect…')
             pass
 
     def enter_new_room(self, fled=False):
@@ -118,6 +168,8 @@ class Room:
         cards to return to the deck
         """
         if self.escapable():
+            #TODO: print flavor text here
+            logging.getLogger('history').info('Fleeing the room')
             return self.slots.values()
         return None
 
@@ -198,7 +250,7 @@ class Dungeon:
         self.deck.shuffle()
         self.player = Player()
         self.room_history = []
-        self.event_history = []
+        #self.event_history = []
         self.generate_room()
 
     def generate_room(self, fled=False):
@@ -230,16 +282,32 @@ class Dungeon:
             self.player.handle_monster(card.value)
 
         if self.player.health == 0:
-            self.event_history.append('You died!')
+            logging.getLogger('history').info('You died!')
 
     def handle_flee(self, cards):
         self.deck.add(cards)
         self.deck.shuffle()
 
+class GameLogHandler(logging.Handler):
+    """Keep track of what is going on in the Dungeon"""
+
+    def __init__(self, *args, **kwargs):
+        super(GameLogHandler, self).__init__(*args, **kwargs)
+        self.history = []
+
+    def get_history(self):
+        return self.history
+
+    def emit(self, record):
+        self.history.append(record.getMessage())
+
+
+
+
 class Renderer:
     """Render the dungeon and controls"""
 
-    def __init__(self, dungeon, terminal, margin = 6, card_spacing = 16):
+    def __init__(self, dungeon, terminal, margin = 6, card_spacing = 18):
         self.dungeon = dungeon
         self.term = terminal
 
@@ -253,11 +321,32 @@ class Renderer:
                         CLUB: self.term.bright_red,
                         JOKER: self.term.bright_blue}
 
+        self.history_handler = GameLogHandler()
+        logging.getLogger('history').setLevel(logging.INFO)
+        logging.getLogger('history').addHandler(self.history_handler)
+
     def render(self):
         print(self.term.clear)
 
-        #Print the cards
         slots = self.dungeon.room_history[-1].slots
+
+        """
+        Print artwork
+        """
+
+        for slot in slots:
+            card = slots[slot]
+            pos = CARD_POSITIONS[slot] * self.spacing
+            color = self.palette[card.suit]
+
+            for (y, line) in enumerate(SUIT_ART[card.suit]):
+                print(self.term.move(1+y,self.margin + pos) + color(line))
+
+        """
+        Print card information
+        """
+
+
         for slot in slots:
             card = slots[slot]
             pos = CARD_POSITIONS[slot] * self.spacing
@@ -269,31 +358,52 @@ class Renderer:
 
             print(
                 self.term.move(self.margin, self.margin + pos) +
-                self.term.black_on_white (str(slots[slot])) +
+                    self.term.black_on_white (slot + '>') +
+                    color(' ' + str(SUIT_TYPES[card.suit]) + ' ' +
+                    str(card.value)) +
                 self.term.move(self.margin + 1, self.margin + pos) +
-                color(str(SUIT_TYPES[card.suit])) +
-                self.term.move(self.margin + 2, self.margin + pos) +
-                self.term.black_on_white ('== ' + slot + ' ==')
+                    self.term.blue (str(slots[slot]))
                 )
 
         #flee command
-        print(
-            self.term.move(self.margin + 6, self.margin) +
-            self.term.black_on_white ('f> flee') )
+        if self.dungeon.room_history[-1].escapable():
+            print(
+                self.term.move(self.margin + 5, self.margin) +
+                self.term.black_on_white('f> flee') )
+        else:
+            print(
+                self.term.move(self.margin + 5, self.margin) +
+                self.term.red('Can\'t flee') )
 
-        #Print stats
+
+
+        """
+        Print stats like shield, health, etc
+        """
+
+        # shield
         if self.dungeon.player.shield:
             if self.dungeon.player.shield.previous_value:
-                print(self.term.move(self.margin + 8, self.margin) +
+                print(self.term.move(self.margin + 7, self.margin) +
                     "Shield: "
                     + str(self.dungeon.player.shield.value) + " "
                     + self.term.move_x(self.margin + 12) + '#' * self.dungeon.player.shield.value
                     + self.term.red(" ≠" + str(self.dungeon.player.shield.previous_value)))
             else:
                 print(
-                    self.term.move(self.margin + 8, self.margin) + "Shield: " +
+                    self.term.move(self.margin + 7, self.margin) + "Shield: " +
                     str(self.dungeon.player.shield.value) +
                     self.term.move_x(self.margin + 12) +  '#' * self.dungeon.player.shield.value)
 
+        # health
+        if self.dungeon.player:
+            print(self.term.move(self.margin + 8, self.margin) +
+                "Health: "
+                + str(self.dungeon.player.health) + " "
+                + self.term.move_x(self.margin + 12) + '#' * self.dungeon.player.health)
+
+
         #Print event history
-        #logging.getLogger('history').info("log this!")
+        for index,x in enumerate(self.history_handler.get_history()[-4:]):
+            print(self.term.move(self.margin + 10 + index, self.margin) +
+            x)

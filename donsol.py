@@ -11,33 +11,6 @@ parser = argparse.ArgumentParser()
 
 TERM = Terminal()
 
-SUIT_ART = {
-    'monster':
-    [
-    "   ∭∭  ",
-    " ◢ ⁕ ) ",
-    "  ╖▓▓╖ ",
-    " m▟ m▟ ",
-    ]
-    ,
-    'potion':
-    [
-    "  ╮◎╭  ",
-    "  ┋⇡┋  ",
-    " ╭╛ ╘╮ ",
-    " ╰━━━╯ ",
-    ]
-    ,
-    'shield':
-    [
-    "  ▞▲▚  ",
-    " ╱┏ ┓╲ ",
-    " ╲┗ ┛╱ ",
-    "  ▚▼▞  ",
-    ]
-    ,
-}
-
 def main():
 
     print(TERM.enter_fullscreen)
