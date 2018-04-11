@@ -1,4 +1,6 @@
+# encoding=utf8  
 # Donsol game
+
 import random
 import sys
 from time import time
