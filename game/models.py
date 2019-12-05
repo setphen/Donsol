@@ -87,7 +87,7 @@ class Card:
         self.value = value
 
     def is_monster(self):
-        return self.suit in [SPADE, CLUB]
+        return self.suit in [SPADE, CLUB, JOKER]
 
     def __str__(self):
         if self.suit == JOKER:
@@ -211,6 +211,11 @@ class Deck:
         logging.getLogger('history').info("Deck's random seed is: {}".format(seed))
         #print("Deck's random seed is: {}".format(seed))
 
+
+    def count(self):
+        """Return how many cards remain in the deck"""
+        return len(self.cards)
+
     def draw(self, count):
         """
         Draw <count> cards from the deck, or as many as are available.
@@ -283,6 +288,10 @@ class Dungeon:
 
         if self.player.health == 0:
             logging.getLogger('history').info('You died!')
+
+        if self.deck.count() == 0:
+            logging.getLogger('history').info('You WON!')
+
 
     def handle_flee(self, cards):
         self.deck.add(cards)
@@ -402,8 +411,15 @@ class Renderer:
                 + str(self.dungeon.player.health) + " "
                 + self.term.move_x(self.margin + 12) + '#' * self.dungeon.player.health)
 
+        if self.dungeon.deck:
+            print(self.term.move(self.margin + 9, self.margin) +
+                "Cards Remaining: "
+                + str(self.dungeon.deck.count()))
+
+
 
         #Print event history
+        print(self.term.move(self.margin + 12, self.margin) + "History:")
         for index,x in enumerate(self.history_handler.get_history()[-4:]):
-            print(self.term.move(self.margin + 10 + index, self.margin) +
+            print(self.term.move(self.margin + 12 + index, self.margin) +
             x)
