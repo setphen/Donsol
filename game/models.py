@@ -259,8 +259,11 @@ class Dungeon:
         self.generate_room()
 
     def generate_room(self, fled=False):
-        self.player.enter_new_room(fled=fled)
-        self.room_history.append(Room(self.deck.draw(4), fled))
+        if self.deck.count() == 0 and self.player.health > 0:
+            logging.getLogger('history').info('You WON!')
+        else:
+            self.player.enter_new_room(fled=fled)
+            self.room_history.append(Room(self.deck.draw(4), fled))
 
     def handle_input(self, input):
         if input == 'q':
@@ -288,10 +291,6 @@ class Dungeon:
 
         if self.player.health == 0:
             logging.getLogger('history').info('You died!')
-
-        if self.deck.count() == 0:
-            logging.getLogger('history').info('You WON!')
-
 
     def handle_flee(self, cards):
         self.deck.add(cards)
