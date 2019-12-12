@@ -191,10 +191,14 @@ class Room:
     def escapable(self):
         """Check whether or not the room is escapable"""
         if self.player_escaped_previous_room:
-            monsters_remain = any(c.is_monster() for c in self.slots.values())
-            if monsters_remain:
+            if self.has_monsters():
                 return False
         return True
+
+    def has_monsters(self):
+        if any(c.is_monster() for c in self.slots.values()):
+            return True
+        return False
 
 
 class Deck:
@@ -259,11 +263,8 @@ class Dungeon:
         self.generate_room()
 
     def generate_room(self, fled=False):
-        if self.deck.count() == 0 and self.player.health > 0:
-            logging.getLogger('history').info('You WON!')
-        else:
-            self.player.enter_new_room(fled=fled)
-            self.room_history.append(Room(self.deck.draw(4), fled))
+        self.player.enter_new_room(fled=fled)
+        self.room_history.append(Room(self.deck.draw(4), fled))
 
     def handle_input(self, input):
         if input == 'q':
@@ -291,6 +292,10 @@ class Dungeon:
 
         if self.player.health == 0:
             logging.getLogger('history').info('You died!')
+            return
+
+        if self.deck.count() == 0 and not self.room.has_monsters:
+            logging.getLogger('history').info('You WON!')
 
     def handle_flee(self, cards):
         self.deck.add(cards)
