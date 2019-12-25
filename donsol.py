@@ -1,9 +1,18 @@
+# encoding=utf8  
+
 #Donsol game
+
 import random
 import math
-from time import sleep
+import sys
+
 import argparse
+
+from time import sleep
 from blessed import Terminal
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 from game.models import *
 
